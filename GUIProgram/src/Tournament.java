@@ -70,11 +70,10 @@ public class Tournament {
 
 
         matchLayout = new GridBagLayout();
-        GridBagConstraints gbc = new GridBagConstraints();
         matchPanel = new JPanel(matchLayout);
         matchPanel.setBackground(new Color(0, 220, 250));
 
-
+        GridBagConstraints gbc = new GridBagConstraints();
         gbc.weightx = 0.0;
         gbc.weighty = 0.0;
         gbc.gridy = 0;
@@ -84,11 +83,7 @@ public class Tournament {
         JLabel lbl = new JLabel("Tournament");
         matchLayout.setConstraints(lbl, gbc);
         matchPanel.add(lbl);
-        
-        gbc.insets = new Insets(5, 5, 5, 5);
 
-
-        
         // CHANGE THIS
         int maxX = 300;
         int maxY = 300;
@@ -96,73 +91,81 @@ public class Tournament {
         for(int i = 0; i < matchupList.size(); i++) {
         	final String player1 = matchupList.get(i).getPlayer1().getName();
             final String player2 = matchupList.get(i).getPlayer2().getName();
-        	
-        	gbc.insets = new Insets(5, 50, 5, 5);
-            gbc.weightx = 0.0;
-            gbc.fill = GridBagConstraints.HORIZONTAL;
-            gbc.anchor = GridBagConstraints.NORTHWEST;
-            gbc.gridy = (i*2) + 1;
-
-            
-            // player 1
-            gbc.gridx = 0;
-            lbl = new JLabel(player1, SwingConstants.RIGHT);
-            matchLayout.setConstraints(lbl, gbc);
-            matchPanel.add(lbl); 
-            
-            // player 2
-            gbc.insets = new Insets(5, 50, 50, 5);
-            gbc.gridy = (i*2) + 2;
-            gbc.gridx = 0;
-            lbl = new JLabel(player2, SwingConstants.RIGHT);
-            matchLayout.setConstraints(lbl, gbc);
-            matchPanel.add(lbl);
-            
-            gbc.insets = new Insets(5, 5, 5, 5);
-            gbc.gridy = (i*2) + 1;
-            gbc.gridx = 1;
-            
-            JButton button = new JButton("Winner");
-            button.addActionListener(new Listener());
-            matchLayout.setConstraints(button, gbc);
-            matchPanel.add(button);
-
-            gbc.gridy = (i*2) + 2;
-            gbc.gridx = 1;
-            button = new JButton("Winner");
-            button.addActionListener(new Listener());
-            matchLayout.setConstraints(button, gbc);
-            matchPanel.add(button);
+            addLabel(0, (i*2) + 1, 1, false, player1);
+            addLabel(0, (i*2) + 2, 1, true, player2);
+            addButton(1, (i*2) + 1, 1, true);
+            addButton(1, (i*2) + 2, 1, true);
 
         }
-        // add void panel to allow vertical scrolling
-        gbc.gridy = maxY;
-        gbc.gridx = 0;
-        JPanel voidYPanel = new JPanel();
-        voidYPanel.setBackground(new Color(15, 23, 25));
-        gbc.weighty = 1.0;
-        gbc.fill = GridBagConstraints.VERTICAL;
-        matchLayout.setConstraints(voidYPanel, gbc);
-        matchPanel.add(voidYPanel);
-        
-        // add void panel to allow for horizontal scrolling
-        JPanel voidXPanel = new JPanel();
-        voidXPanel.setBackground(new Color(250, 250, 250));
-        gbc.gridy = 0;
-        gbc.gridx = maxX;
-        gbc.weighty = 0.0;
-        gbc.weightx = 1.0;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        matchLayout.setConstraints(voidXPanel, gbc);
-        matchPanel.add(voidXPanel);
+        // add void panel to allow for scrolling
+        addVoidPanel(0, maxY);
+        addVoidPanel(maxX, 0);
 
         // add scroll panel
         JScrollPane scrollPanel = new JScrollPane(matchPanel);
+        scrollPanel.getVerticalScrollBar().setUnitIncrement(16);
         panelMain.add(scrollPanel, BorderLayout.CENTER);
 
         window.setVisible(true); 
         matchPanel.revalidate();
         matchPanel.repaint();
+	}
+	
+	private void addVoidPanel(int x, int y) {
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.anchor = GridBagConstraints.NORTHWEST;
+		gbc.gridy = y;
+        gbc.gridx = x;
+        // if vertical panel
+        if (x == 0) {
+        	gbc.fill = GridBagConstraints.VERTICAL;
+        	gbc.weighty = 1.0;
+        }
+        // if horizontal panel
+        else {
+        	gbc.fill = GridBagConstraints.HORIZONTAL;
+        	gbc.weightx = 1.0;
+        }
+        
+        JPanel voidPanel = new JPanel();
+        voidPanel.setBackground(new Color(255, 255, 255));
+        matchLayout.setConstraints(voidPanel, gbc);
+        matchPanel.add(voidPanel);
+	}
+	
+	private void addButton(int x, int y, int height, boolean firstRow) {
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.gridy = y;
+        gbc.gridx = x;
+        if (firstRow) {
+        	gbc.insets = new Insets(5, 5, 5, 5);
+        	gbc.anchor = GridBagConstraints.NORTHWEST;
+        } else { 
+        	gbc.insets = new Insets(5, 5, 50, 5);
+        }
+        gbc.gridheight = height;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        
+        JButton button = new JButton("Winner");
+        button.addActionListener(new Listener());
+        matchLayout.setConstraints(button, gbc);
+        matchPanel.add(button);
+	}
+	
+	private void addLabel(int x, int y, int height, boolean gap, String player) { 
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.gridy = y;
+        gbc.gridx = x;
+        gbc.insets = new Insets(5, 5, 5, 5);
+        if (gap) {
+        	gbc.insets = new Insets(5, 5, 50, 5);
+        }
+        gbc.gridheight = height;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        
+        JLabel lbl = new JLabel(player, SwingConstants.RIGHT);
+        matchLayout.setConstraints(lbl, gbc);
+        matchPanel.add(lbl);
 	}
 	
 	private class Listener implements ActionListener
@@ -193,10 +196,8 @@ public class Tournament {
             	}
 
             }
-            
-            
-            System.out.println("firstx= " + x + " as" + y);	
-            // assume set of x is 1,3,5,7,8 etc
+           
+            // assume set of x is 1,3,5,7,9 etc
             // is top player
             if ((y-1) % Math.pow(2, ((x+1)/2)) == 0) {
             	System.out.println("yaba");
@@ -208,15 +209,6 @@ public class Tournament {
             }
             x += 1;
             height = (int) Math.pow(2, ((x+1)/2));
-            GridBagConstraints gbc = new GridBagConstraints();
-            gbc.insets = new Insets(5, 5, 50, 5);
-            gbc.gridx = x;
-            gbc.gridy = y;
-            gbc.gridheight = height;
-            gbc.fill = GridBagConstraints.HORIZONTAL;
-            JLabel lblTitle2 = new JLabel(player, SwingConstants.RIGHT);;
-            
-            matchLayout.setConstraints(lblTitle2, gbc);
             
             //remove the old label if it exists
             for(Component c : componentList){
@@ -231,8 +223,8 @@ public class Tournament {
             	}
 
             }
-            
-            matchPanel.add(lblTitle2);
+            addLabel(x, y, height, true, player);
+
             int buttonY = 0;
             System.out.println("button check, x=" + x + " y=" + y );
             if ((y-1) % Math.pow(2, ((x+3)/2)) == 0) {
@@ -254,34 +246,19 @@ public class Tournament {
             	System.out.println("bottom");
             	for(Component c : componentList){
                 	GridBagConstraints gbc2 = matchLayout.getConstraints(c);
-                    //Find the components you want to remove
                 	if (gbc2.gridx == x && gbc2.gridy == (y-height)) {
-//                		player = ((JLabel) c).getText();
-//                		System.out.println(player + "madeit");
                 		buttonY = y-height;
                 		twoPlayers = true;
                 	}
 
                 }	
             }
-            
             if (twoPlayers) {
-            	System.out.println("twoplayers is treue");
             	x += 1;
-                gbc.gridx = x;
-                JButton button = new JButton("Winner");
-                button.addActionListener(new Listener());
-                matchLayout.setConstraints(button, gbc);
-                matchPanel.add(button);
+                addButton(x, y, height, false);
+                addButton(x, buttonY, height, false);
                 
-                gbc.gridy = buttonY;
-                button = new JButton("Winner");
-                button.addActionListener(new Listener());
-                matchLayout.setConstraints(button, gbc);
-                matchPanel.add(button);
             }
-            
-            System.out.println("final x: " + x + " final y:" + y + " final height: " + Math.pow(2, ((x+1)/2)));	
             
 			matchPanel.revalidate();
             matchPanel.repaint();
