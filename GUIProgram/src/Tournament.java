@@ -42,6 +42,7 @@ public class Tournament {
 	 * Create the application.
 	 */
 	public Tournament() {
+		// list for testing purposes
 		matchupList.add(new Matchup(new Player("Leader", "g1"), new Player("Leaderasdasad1", "g1")));
 		matchupList.add(new Matchup(new Player("Bob", "p2"), new Player("Leade2r", "g1")));
 		matchupList.add(new Matchup(new Player("Uncle", "d2"), new Player("Leader3", "g1")));
@@ -77,17 +78,19 @@ public class Tournament {
         gbc.weightx = 0.0;
         gbc.weighty = 0.0;
         gbc.gridy = 0;
+        // makes a 50 unit gap on the left
         gbc.insets = new Insets(5, 50, 5, 5);
-
         gbc.gridx = 0;
+        
         JLabel lbl = new JLabel("Tournament");
         matchLayout.setConstraints(lbl, gbc);
         matchPanel.add(lbl);
 
-        // CHANGE THIS
+        // CHANGE THIS to the max list size when it gets read in from a file
         int maxX = 300;
         int maxY = 300;
 
+        // adds the initial players and buttons for the tournament
         for(int i = 0; i < matchupList.size(); i++) {
         	final String player1 = matchupList.get(i).getPlayer1().getName();
             final String player2 = matchupList.get(i).getPlayer2().getName();
@@ -97,7 +100,7 @@ public class Tournament {
             addButton(1, (i*2) + 2, 1, true);
 
         }
-        // add void panel to allow for scrolling
+        // adds void panels to allow for scrolling
         addVoidPanel(0, maxY);
         addVoidPanel(maxX, 0);
 
@@ -111,6 +114,9 @@ public class Tournament {
         matchPanel.repaint();
 	}
 	
+	/**
+	 * Adds a panel to allow for scrolling of the window
+	 */
 	private void addVoidPanel(int x, int y) {
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.anchor = GridBagConstraints.NORTHWEST;
@@ -133,10 +139,14 @@ public class Tournament {
         matchPanel.add(voidPanel);
 	}
 	
+	/**
+	 * Add's a winner button to matchPanel.
+	 */
 	private void addButton(int x, int y, int height, boolean firstRow) {
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridy = y;
         gbc.gridx = x;
+        // first row needs to be anchored to the northwest
         if (firstRow) {
         	gbc.insets = new Insets(5, 5, 5, 5);
         	gbc.anchor = GridBagConstraints.NORTHWEST;
@@ -152,11 +162,15 @@ public class Tournament {
         matchPanel.add(button);
 	}
 	
+	/**
+	 * Add's a player label to matchPanel.
+	 */
 	private void addLabel(int x, int y, int height, boolean gap, String player) { 
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridy = y;
         gbc.gridx = x;
         gbc.insets = new Insets(5, 5, 5, 5);
+        // gap is only false in the first player of each pair in the first row
         if (gap) {
         	gbc.insets = new Insets(5, 5, 50, 5);
         }
@@ -164,12 +178,21 @@ public class Tournament {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         
         JLabel lbl = new JLabel(player, SwingConstants.RIGHT);
+        lbl.setForeground(Color.black);
         matchLayout.setConstraints(lbl, gbc);
         matchPanel.add(lbl);
 	}
 	
+	/**
+	 * Handles the logic when a button is pressed.
+	 */
 	private class Listener implements ActionListener
 	{
+		
+		/**
+		 * Need to refactor this code.
+		 * Code to change colour of the winning player has been commented out for now.
+		 */
 		public void actionPerformed(ActionEvent e)
 	    {  
 			String player = "error";
@@ -193,6 +216,7 @@ public class Tournament {
                 //Find the components you want to remove
             	if (gbc2.gridx == (x-1) && gbc2.gridy == y) {
             		player = ((JLabel) c).getText();
+//            		((JLabel) c).setForeground(Color.red);
             	}
 
             }
@@ -201,10 +225,24 @@ public class Tournament {
             // is top player
             if ((y-1) % Math.pow(2, ((x+1)/2)) == 0) {
             	System.out.println("yaba");
+//            	for(Component c : componentList){
+//                	GridBagConstraints gbc2 = matchLayout.getConstraints(c);
+//                    //remove player JLabel if it exists
+//                	if (gbc2.gridx == x-1 && gbc2.gridy == y + Math.pow(2, ((x-1)/2))) {
+//                		((JLabel) c).setForeground(Color.black);
+//                	}
+//            	}
             	
             }
             // is bottom player
             else {
+//            	for(Component c : componentList){
+//                	GridBagConstraints gbc2 = matchLayout.getConstraints(c);
+//                    //remove player JLabel if it exists
+//                	if (gbc2.gridx == x-1 && gbc2.gridy == y - Math.pow(2, ((x-1)/2))) {
+//                		((JLabel) c).setForeground(Color.black);
+//                	}
+//            	}
             	y -= Math.pow(2, ((x-1)/2));
             }
             x += 1;
@@ -231,7 +269,7 @@ public class Tournament {
             	System.out.println("top");
             	for(Component c : componentList){
                 	GridBagConstraints gbc2 = matchLayout.getConstraints(c);
-                    //Find the components you want to remove
+                    // check that there is another player in this matchup
                 	if (gbc2.gridx == x && gbc2.gridy == (y+height)) {
 //                		player = ((JLabel) c).getText();
 //                		System.out.println(player + "madeit");
